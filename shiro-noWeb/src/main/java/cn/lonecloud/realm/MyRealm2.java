@@ -6,9 +6,9 @@ import org.apache.shiro.realm.Realm;
 /**
  * Created by lonecloud on 17/3/31.
  */
-public class MyRealm implements Realm {
+public class MyRealm2 implements Realm {
 
-    private static final String RELAM_NAME = "MyRealm";
+    private static final String RELAM_NAME = "MyRealm2";
 
     @Override
     public String getName() {
