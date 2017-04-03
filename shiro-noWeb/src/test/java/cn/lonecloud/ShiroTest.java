@@ -11,6 +11,8 @@ import org.apache.shiro.util.Factory;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 /**ˇ
  * Created by lonecloud on 17/3/30.
  */
@@ -36,9 +38,45 @@ public class ShiroTest {
         checkAuth("classpath:shiro-mutiRealm.ini","1","2");
     }
 
+    /**
+     * 判断有没有权限
+     */
+    @Test
+    public void testRole(){
+        Subject subject = checkAuth("classpath:role/shiro-role.ini", "wang", "123");
+        boolean isAdmin = subject.hasRole("admin");
+        Assert.assertEquals(true,isAdmin);
+    }
 
+    /**
+     * 判断是否拥有多个用户组
+     */
+    @Test
+    public void testRoleList(){
+        Subject subject = checkAuth("classpath:role/shiro-role.ini", "zhang", "123");
+        boolean allRoles = subject.hasAllRoles(Arrays.asList("admin", "admin2", "admin32"));
+        Assert.assertEquals(true,allRoles);
+    }
 
-    private void checkAuth(String iniPath,String username,String password){
+    /**
+     * 判断有没有操作权限
+     */
+    @Test
+    public void testHasPerssion(){
+        Subject subject = checkAuth("classpath:role/shiro_role_perssion.ini", "zhang", "123");
+        boolean permitted = subject.isPermitted("users:crate");
+        boolean permittedAll = subject.isPermittedAll("users:crate", "users:delete");
+        Assert.assertEquals(true,permitted);
+        Assert.assertEquals(true,permittedAll);
+    }
+    /**
+     * 登录
+     * @param iniPath
+     * @param username
+     * @param password
+     * @return
+     */
+    private Subject checkAuth(String iniPath,String username,String password){
         //1、获取SecurityManager工厂，此处使用Ini配置文件初始化SecurityManager
         Factory<SecurityManager> factory =
                 new IniSecurityManagerFactory(iniPath);
@@ -62,6 +100,14 @@ public class ShiroTest {
             System.out.println("程序出错!");
         }
         Assert.assertEquals(true, subject.isAuthenticated()); //断言用户已经登录
+        return subject;
+    }
+
+    /**
+     * 退出
+     * @param subject
+     */
+    public void logout(Subject subject){
         //6、退出
         subject.logout();
     }
